@@ -110,6 +110,7 @@ function Navbar() {
           {[
             { to: "/toxins" as const, label: "毒図鑑" },
             { to: "/categories" as const, label: "カテゴリ" },
+            { to: "/chemistry" as const, label: "化学" },
             { to: "/articles" as const, label: "コラム" },
             { to: "/history" as const, label: "歴史" },
             { to: "/ranking" as const, label: "ランキング" },
@@ -316,6 +317,7 @@ function Footer() {
           {[
             { to: "/toxins" as const, label: "毒図鑑" },
             { to: "/articles" as const, label: "コラム" },
+            { to: "/chemistry" as const, label: "化学構造一覧" },
             { to: "/history" as const, label: "歴史年表" },
             { to: "/ranking" as const, label: "ランキング" },
           ].map(({ to, label }) => (
