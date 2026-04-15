@@ -736,11 +736,3 @@ LD₅₀は毒性評価の参考値であり、以下の限界があります：
 
   console.log("✅ Seeding complete!");
 }
-
-// 直接実行時のみシードを実行（import された場合は実行しない）
-if (import.meta.main) {
-  seed().catch((e) => {
-    console.error("❌ Seed failed:", e);
-    process.exit(1);
-  });
-}
