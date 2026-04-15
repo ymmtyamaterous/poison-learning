@@ -1,5 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -12,11 +14,14 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
     from: "/",
   });
   const { isPending } = authClient.useSession();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
       name: "",
     },
     onSubmit: async ({ value }) => {
@@ -40,11 +45,17 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
       );
     },
     validators: {
-      onSubmit: z.object({
-        name: z.string().min(2, "名前は2文字以上で入力してください"),
-        email: z.email("有効なメールアドレスを入力してください"),
-        password: z.string().min(8, "パスワードは8文字以上で入力してください"),
-      }),
+      onSubmit: z
+        .object({
+          name: z.string().min(2, "名前は2文字以上で入力してください"),
+          email: z.email("有効なメールアドレスを入力してください"),
+          password: z.string().min(8, "パスワードは8文字以上で入力してください"),
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: "パスワードが一致しません",
+          path: ["confirmPassword"],
+        }),
     },
   });
 
@@ -238,34 +249,137 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
                 >
                   パスワード
                 </label>
-                <input
-                  id={field.name}
-                  name={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                <div style={{ position: "relative" }}>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={showPassword ? "text" : "password"}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    style={{
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      padding: "0.625rem 2.75rem 0.625rem 0.875rem",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9375rem",
+                      outline: "none",
+                      transition: "border-color 0.2s, box-shadow 0.2s",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--border-strong)";
+                      e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "var(--border)";
+                      e.target.style.boxShadow = "none";
+                      field.handleBlur();
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                    }}
+                    aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {field.state.meta.errors.map((error) => (
+                  <p
+                    key={error?.message}
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--crimson)",
+                      margin: 0,
+                    }}
+                  >
+                    {error?.message}
+                  </p>
+                ))}
+              </div>
+            )}
+          </form.Field>
+
+          {/* パスワード確認フィールド */}
+          <form.Field name="confirmPassword">
+            {(field) => (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label
+                  htmlFor={field.name}
                   style={{
-                    background: "var(--bg-surface)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    padding: "0.625rem 0.875rem",
-                    color: "var(--text-primary)",
-                    fontSize: "0.9375rem",
-                    outline: "none",
-                    transition: "border-color 0.2s, box-shadow 0.2s",
-                    width: "100%",
-                    boxSizing: "border-box",
+                    fontSize: "0.8rem",
+                    fontFamily: "'Space Mono', monospace",
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.08em",
                   }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "var(--border-strong)";
-                    e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "var(--border)";
-                    e.target.style.boxShadow = "none";
-                    field.handleBlur();
-                  }}
-                />
+                >
+                  パスワード（確認）
+                </label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    style={{
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      padding: "0.625rem 2.75rem 0.625rem 0.875rem",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9375rem",
+                      outline: "none",
+                      transition: "border-color 0.2s, box-shadow 0.2s",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--border-strong)";
+                      e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "var(--border)";
+                      e.target.style.boxShadow = "none";
+                      field.handleBlur();
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                    }}
+                    aria-label={showConfirmPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
                 {field.state.meta.errors.map((error) => (
                   <p
                     key={error?.message}

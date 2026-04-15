@@ -1,5 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -12,6 +14,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
     from: "/",
   });
   const { isPending } = authClient.useSession();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -177,34 +180,56 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
                 >
                   パスワード
                 </label>
-                <input
-                  id={field.name}
-                  name={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  style={{
-                    background: "var(--bg-surface)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    padding: "0.625rem 0.875rem",
-                    color: "var(--text-primary)",
-                    fontSize: "0.9375rem",
-                    outline: "none",
-                    transition: "border-color 0.2s, box-shadow 0.2s",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = "var(--border-strong)";
-                    e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = "var(--border)";
-                    e.target.style.boxShadow = "none";
-                    field.handleBlur();
-                  }}
-                />
+                <div style={{ position: "relative" }}>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={showPassword ? "text" : "password"}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    style={{
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      padding: "0.625rem 2.75rem 0.625rem 0.875rem",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9375rem",
+                      outline: "none",
+                      transition: "border-color 0.2s, box-shadow 0.2s",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--border-strong)";
+                      e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "var(--border)";
+                      e.target.style.boxShadow = "none";
+                      field.handleBlur();
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                    }}
+                    aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
                 {field.state.meta.errors.map((error) => (
                   <p
                     key={error?.message}
