@@ -42,6 +42,16 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 function Navbar() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { to: "/toxins" as const, label: "毒図鑑" },
+    { to: "/categories" as const, label: "カテゴリ" },
+    { to: "/chemistry" as const, label: "化学" },
+    { to: "/articles" as const, label: "コラム" },
+    { to: "/history" as const, label: "歴史" },
+    { to: "/ranking" as const, label: "ランキング" },
+  ];
 
   return (
     <nav
@@ -105,16 +115,9 @@ function Navbar() {
           </div>
         </Link>
 
-        {/* ナビリンク */}
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-          {[
-            { to: "/toxins" as const, label: "毒図鑑" },
-            { to: "/categories" as const, label: "カテゴリ" },
-            { to: "/chemistry" as const, label: "化学" },
-            { to: "/articles" as const, label: "コラム" },
-            { to: "/history" as const, label: "歴史" },
-            { to: "/ranking" as const, label: "ランキング" },
-          ].map(({ to, label }) => (
+        {/* デスクトップ ナビリンク */}
+        <div className="nav-desktop-links">
+          {navLinks.map(({ to, label }) => (
             <Link
               key={to}
               to={to}
@@ -142,9 +145,10 @@ function Navbar() {
           ))}
         </div>
 
-        {/* 右側: 検索 + 認証 */}
+        {/* 右側: 検索 + 認証 + ハンバーガー */}
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <Link to="/search" style={{ textDecoration: "none" }}>
+          {/* 検索（デスクトップ） */}
+          <Link to="/search" style={{ textDecoration: "none" }} className="nav-desktop-search">
             <div
               style={{
                 display: "flex",
@@ -171,36 +175,136 @@ function Navbar() {
             </div>
           </Link>
 
+          {/* 認証ボタン（デスクトップ） */}
+          <div className="nav-desktop-search">
+            {session ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  await authClient.signOut();
+                  router.navigate({ to: "/" });
+                }}
+                style={{
+                  background: "transparent",
+                  border: "1px solid var(--border-strong)",
+                  borderRadius: "8px",
+                  padding: "0.375rem 1rem",
+                  color: "var(--text-secondary)",
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                }}
+              >
+                ログアウト
+              </button>
+            ) : (
+              <Link to="/login" style={{ textDecoration: "none" }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    padding: "0.375rem 1rem",
+                    background: "var(--poison-green)",
+                    color: "#000",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  ログイン
+                </span>
+              </Link>
+            )}
+          </div>
+
+          {/* ハンバーガーボタン（モバイル） */}
+          <button
+            type="button"
+            className="nav-hamburger"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="メニューを開く"
+          >
+            {mobileMenuOpen ? "✕" : "☰"}
+          </button>
+        </div>
+      </div>
+
+      {/* モバイルメニュー */}
+      <div className={`nav-mobile-menu${mobileMenuOpen ? " open" : ""}`}>
+        {navLinks.map(({ to, label }) => (
+          <Link
+            key={to}
+            to={to}
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              textDecoration: "none",
+              padding: "0.875rem 0",
+              borderBottom: "1px solid var(--border)",
+              display: "block",
+              fontSize: "0.9375rem",
+              color: "var(--text-secondary)",
+            }}
+            activeProps={{
+              style: {
+                textDecoration: "none",
+                padding: "0.875rem 0",
+                borderBottom: "1px solid var(--border)",
+                display: "block",
+                fontSize: "0.9375rem",
+                color: "var(--poison-green)",
+              },
+            }}
+          >
+            {label}
+          </Link>
+        ))}
+        <Link
+          to="/search"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{
+            textDecoration: "none",
+            padding: "0.875rem 0",
+            borderBottom: "1px solid var(--border)",
+            display: "block",
+            fontSize: "0.9375rem",
+            color: "var(--text-secondary)",
+          }}
+        >
+          🔍 検索
+        </Link>
+        <div style={{ paddingTop: "1rem" }}>
           {session ? (
             <button
               type="button"
               onClick={async () => {
                 await authClient.signOut();
+                setMobileMenuOpen(false);
                 router.navigate({ to: "/" });
               }}
               style={{
+                width: "100%",
                 background: "transparent",
                 border: "1px solid var(--border-strong)",
                 borderRadius: "8px",
-                padding: "0.375rem 1rem",
+                padding: "0.625rem 1rem",
                 color: "var(--text-secondary)",
-                fontSize: "0.875rem",
+                fontSize: "0.9375rem",
                 cursor: "pointer",
+                textAlign: "left",
               }}
             >
               ログアウト
             </button>
           ) : (
-            <Link to="/login" style={{ textDecoration: "none" }}>
+            <Link to="/login" style={{ textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>
               <span
                 style={{
-                  display: "inline-block",
-                  padding: "0.375rem 1rem",
+                  display: "block",
+                  padding: "0.625rem 1rem",
                   background: "var(--poison-green)",
                   color: "#000",
                   borderRadius: "8px",
-                  fontSize: "0.875rem",
+                  fontSize: "0.9375rem",
                   fontWeight: 700,
+                  textAlign: "center",
                 }}
               >
                 ログイン
@@ -224,12 +328,10 @@ function Footer() {
       }}
     >
       <div
+        className="responsive-footer-grid"
         style={{
           maxWidth: "1280px",
           margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "2rem",
         }}
       >
         {/* ブランド */}
@@ -363,14 +465,12 @@ function Footer() {
       </div>
 
       <div
+        className="responsive-footer-bottom"
         style={{
           maxWidth: "1280px",
           margin: "3rem auto 0",
           paddingTop: "1.5rem",
           borderTop: "1px solid var(--border)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
         }}
       >
         <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontFamily: "'Space Mono',monospace" }}>

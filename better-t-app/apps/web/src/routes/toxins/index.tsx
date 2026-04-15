@@ -104,6 +104,7 @@ function ToxinsPage() {
           background: "var(--bg-surface)",
           border: "1px solid var(--border)",
           borderRadius: "12px",
+          alignItems: "flex-end",
         }}
       >
         {/* カテゴリフィルター */}

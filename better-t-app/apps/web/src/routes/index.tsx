@@ -214,12 +214,10 @@ function Home() {
           }}
         >
           <div
+            className="responsive-stats-grid"
             style={{
               maxWidth: "1280px",
               margin: "0 auto",
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "1rem",
               textAlign: "center",
             }}
           >
@@ -456,12 +454,10 @@ function Home() {
       {/* ランキング + 歴史 */}
       <section style={{ padding: "5rem 1.5rem" }}>
         <div
+          className="responsive-grid-2"
           style={{
             maxWidth: "1280px",
             margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "3rem",
           }}
         >
           {/* ランキング */}
