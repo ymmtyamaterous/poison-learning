@@ -176,7 +176,7 @@ function Navbar() {
           </Link>
 
           {/* 認証ボタン（デスクトップ） */}
-          <div className="nav-desktop-search" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div className="nav-desktop-search nav-auth-buttons">
             {session ? (
               <>
                 <Link

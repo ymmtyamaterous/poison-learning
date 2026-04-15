@@ -91,6 +91,10 @@ body::before {
   align-items: center;
 }
 
+.nav-auth-buttons {
+  gap: 0.5rem;
+}
+
 .nav-hamburger {
   display: none;
   align-items: center;
