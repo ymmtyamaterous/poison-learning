@@ -35,7 +35,7 @@ jobs:
               with:
                 images: ghcr.io/${{ github.repository }}
                 tags: |
-                    1.0.1
+                    1.0.0
                     latest
                 
             - name: Build & Push Image
@@ -58,6 +58,6 @@ jobs:
                 key: ${{ secrets.VPS_SSH_KEY }}
                 port: ${{ secrets.VPS_SSH_PORT }}
                 script: |
-                    cd ~/pj/web-quizize
+                    cd ~/pj/dokugaku
                     docker compose pull
                     docker compose up -d
