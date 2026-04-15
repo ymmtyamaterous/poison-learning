@@ -75,11 +75,8 @@ function RouteComponent() {
     <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "3rem 1.5rem" }}>
       {/* ユーザー情報 */}
       <div
+        className="dashboard-user-card"
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "1.25rem",
-          padding: "1.75rem 2rem",
           background: "var(--bg-card)",
           border: "1px solid var(--border)",
           borderRadius: "12px",
@@ -130,7 +127,7 @@ function RouteComponent() {
             {user?.email}
           </p>
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: "1.5rem", textAlign: "center" }}>
+        <div className="dashboard-user-stats" style={{ textAlign: "center" }}>
           <div>
             <div
               style={{
@@ -322,9 +319,10 @@ function RouteComponent() {
                           {item.nameJa}
                         </div>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
+                      <div className="dashboard-toxin-meta">
                         <DangerDots level={item.dangerLevel} />
                         <span
+                          className="dashboard-toxin-badge"
                           style={{
                             fontSize: "0.625rem",
                             fontFamily: "'Space Mono',monospace",

@@ -183,6 +183,56 @@ body::before {
   }
 }
 
+/* ========== ダッシュボード ========== */
+.dashboard-user-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.75rem 2rem;
+}
+
+.dashboard-user-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dashboard-toxin-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.dashboard-toxin-badge {
+  /* デスクトップでは表示 */
+}
+
+@media (max-width: 768px) {
+  .dashboard-user-card {
+    flex-wrap: wrap;
+    padding: 1.25rem;
+  }
+
+  .dashboard-user-stats {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .dashboard-toxin-meta {
+    gap: 0.5rem;
+  }
+
+  .dashboard-toxin-badge {
+    display: none;
+  }
+}
+
 /* ========== ブレークポイント: スモールモバイル (≤480px) ========== */
 @media (max-width: 480px) {
   .responsive-footer-grid {
