@@ -356,6 +356,9 @@ function Footer() {
             本サイトの情報は教育目的のみに提供されています。
             危険物質の不正使用は法律で厳しく禁じられています。
           </p>
+          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: 1.7, marginTop: "0.75rem" }}>
+            🤖 本サイトのコンテンツは生成AIにより作成されています。情報の正確性については保証できません。
+          </p>
         </div>
       </div>
 
@@ -373,18 +376,32 @@ function Footer() {
         <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontFamily: "'Space Mono',monospace" }}>
           © 2025 毒学. Educational purposes only.
         </span>
-        <span
-          style={{
-            fontSize: "0.6875rem",
-            color: "var(--text-muted)",
-            background: "rgba(224,58,58,0.1)",
-            border: "1px solid rgba(224,58,58,0.2)",
-            padding: "0.25rem 0.75rem",
-            borderRadius: "999px",
-          }}
-        >
-          ⚠ 教育目的のみ
-        </span>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <span
+            style={{
+              fontSize: "0.6875rem",
+              color: "var(--text-muted)",
+              background: "rgba(99,102,241,0.1)",
+              border: "1px solid rgba(99,102,241,0.25)",
+              padding: "0.25rem 0.75rem",
+              borderRadius: "999px",
+            }}
+          >
+            🤖 AI生成コンテンツ
+          </span>
+          <span
+            style={{
+              fontSize: "0.6875rem",
+              color: "var(--text-muted)",
+              background: "rgba(224,58,58,0.1)",
+              border: "1px solid rgba(224,58,58,0.2)",
+              padding: "0.25rem 0.75rem",
+              borderRadius: "999px",
+            }}
+          >
+            ⚠ 教育目的のみ
+          </span>
+        </div>
       </div>
     </footer>
   );
