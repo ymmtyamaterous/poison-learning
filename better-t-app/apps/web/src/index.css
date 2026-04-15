@@ -1,1 +1,80 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;700&family=Space+Mono:wght@400;700&display=swap");
 @import "@better-t-app/ui/globals.css";
+
+:root {
+  --bg-base: #080b10;
+  --bg-surface: #0f1520;
+  --bg-card: #131a28;
+  --bg-card-hover: #1a2438;
+
+  --poison-green: #39e06a;
+  --poison-glow: rgba(57, 224, 106, 0.18);
+  --acid-yellow: #c8e03a;
+  --deep-purple: #7c3aed;
+  --purple-light: #a78bfa;
+  --crimson: #e03a3a;
+  --teal: #2dd4bf;
+  --amber: #f59e0b;
+
+  --text-primary: #e8f0e9;
+  --text-secondary: #8a9baa;
+  --text-muted: #4a5568;
+
+  --border: rgba(57, 224, 106, 0.12);
+  --border-strong: rgba(57, 224, 106, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg-base);
+}
+
+body {
+  font-family: "Noto Sans JP", sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ノイズテクスチャオーバーレイ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* スクロールバー */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a3a2a;
+  border-radius: 3px;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 20s linear infinite; }
+.animate-spin-slow-rev { animation: spin-slow 30s linear infinite reverse; }
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
