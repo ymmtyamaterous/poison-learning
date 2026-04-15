@@ -1,8 +1,7 @@
-import { Button } from "@better-t-app/ui/components/button";
-import { Input } from "@better-t-app/ui/components/input";
-import { Label } from "@better-t-app/ui/components/label";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -15,11 +14,14 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
     from: "/",
   });
   const { isPending } = authClient.useSession();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
       name: "",
     },
     onSubmit: async ({ value }) => {
@@ -34,7 +36,7 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
             navigate({
               to: "/dashboard",
             });
-            toast.success("Sign up successful");
+            toast.success("アカウントを作成しました");
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -43,11 +45,17 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
       );
     },
     validators: {
-      onSubmit: z.object({
-        name: z.string().min(2, "Name must be at least 2 characters"),
-        email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
-      }),
+      onSubmit: z
+        .object({
+          name: z.string().min(2, "名前は2文字以上で入力してください"),
+          email: z.email("有効なメールアドレスを入力してください"),
+          password: z.string().min(8, "パスワードは8文字以上で入力してください"),
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: "パスワードが一致しません",
+          path: ["confirmPassword"],
+        }),
     },
   });
 
@@ -56,104 +64,404 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
   }
 
   return (
-    <div className="mx-auto w-full mt-10 max-w-md p-6">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "420px",
+        position: "relative",
+        zIndex: 1,
+      }}
+    >
+      {/* カードコンテナ */}
+      <div
+        style={{
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-strong)",
+          borderRadius: "16px",
+          padding: "2.5rem 2rem",
+          boxShadow: "0 0 40px rgba(57,224,106,0.06), 0 24px 48px rgba(0,0,0,0.4)",
         }}
-        className="space-y-4"
       >
-        <div>
+        {/* ヘッダー */}
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>☠</div>
+          <h1
+            style={{
+              fontFamily: "'Noto Serif JP', serif",
+              fontSize: "1.5rem",
+              fontWeight: 700,
+              color: "var(--poison-green)",
+              letterSpacing: "0.05em",
+              marginBottom: "0.25rem",
+            }}
+          >
+            アカウント作成
+          </h1>
+          <p
+            style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: "0.625rem",
+              color: "var(--text-muted)",
+              letterSpacing: "0.12em",
+            }}
+          >
+            CREATE ACCOUNT
+          </p>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+          style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+        >
+          {/* 名前フィールド */}
           <form.Field name="name">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
-                <Input
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label
+                  htmlFor={field.name}
+                  style={{
+                    fontSize: "0.8rem",
+                    fontFamily: "'Space Mono', monospace",
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  名前
+                </label>
+                <input
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
-                  onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
+                  style={{
+                    background: "var(--bg-surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    padding: "0.625rem 0.875rem",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9375rem",
+                    outline: "none",
+                    transition: "border-color 0.2s, box-shadow 0.2s",
+                    width: "100%",
+                    boxSizing: "border-box",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "var(--border-strong)";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "var(--border)";
+                    e.target.style.boxShadow = "none";
+                    field.handleBlur();
+                  }}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p
+                    key={error?.message}
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--crimson)",
+                      margin: 0,
+                    }}
+                  >
                     {error?.message}
                   </p>
                 ))}
               </div>
             )}
           </form.Field>
-        </div>
 
-        <div>
+          {/* メールフィールド */}
           <form.Field name="email">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
-                <Input
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label
+                  htmlFor={field.name}
+                  style={{
+                    fontSize: "0.8rem",
+                    fontFamily: "'Space Mono', monospace",
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  メールアドレス
+                </label>
+                <input
                   id={field.name}
                   name={field.name}
                   type="email"
                   value={field.state.value}
-                  onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
+                  style={{
+                    background: "var(--bg-surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    padding: "0.625rem 0.875rem",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9375rem",
+                    outline: "none",
+                    transition: "border-color 0.2s, box-shadow 0.2s",
+                    width: "100%",
+                    boxSizing: "border-box",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "var(--border-strong)";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "var(--border)";
+                    e.target.style.boxShadow = "none";
+                    field.handleBlur();
+                  }}
                 />
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p
+                    key={error?.message}
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--crimson)",
+                      margin: 0,
+                    }}
+                  >
                     {error?.message}
                   </p>
                 ))}
               </div>
             )}
           </form.Field>
-        </div>
 
-        <div>
+          {/* パスワードフィールド */}
           <form.Field name="password">
             {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Password</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label
+                  htmlFor={field.name}
+                  style={{
+                    fontSize: "0.8rem",
+                    fontFamily: "'Space Mono', monospace",
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  パスワード
+                </label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={showPassword ? "text" : "password"}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    style={{
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      padding: "0.625rem 2.75rem 0.625rem 0.875rem",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9375rem",
+                      outline: "none",
+                      transition: "border-color 0.2s, box-shadow 0.2s",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--border-strong)";
+                      e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "var(--border)";
+                      e.target.style.boxShadow = "none";
+                      field.handleBlur();
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                    }}
+                    aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
                 {field.state.meta.errors.map((error) => (
-                  <p key={error?.message} className="text-red-500">
+                  <p
+                    key={error?.message}
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--crimson)",
+                      margin: 0,
+                    }}
+                  >
                     {error?.message}
                   </p>
                 ))}
               </div>
             )}
           </form.Field>
-        </div>
 
-        <form.Subscribe
-          selector={(state) => ({ canSubmit: state.canSubmit, isSubmitting: state.isSubmitting })}
-        >
-          {({ canSubmit, isSubmitting }) => (
-            <Button type="submit" className="w-full" disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Sign Up"}
-            </Button>
-          )}
-        </form.Subscribe>
-      </form>
+          {/* パスワード確認フィールド */}
+          <form.Field name="confirmPassword">
+            {(field) => (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label
+                  htmlFor={field.name}
+                  style={{
+                    fontSize: "0.8rem",
+                    fontFamily: "'Space Mono', monospace",
+                    color: "var(--text-secondary)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  パスワード（確認）
+                </label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    style={{
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      padding: "0.625rem 2.75rem 0.625rem 0.875rem",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9375rem",
+                      outline: "none",
+                      transition: "border-color 0.2s, box-shadow 0.2s",
+                      width: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--border-strong)";
+                      e.target.style.boxShadow = "0 0 0 3px rgba(57,224,106,0.08)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "var(--border)";
+                      e.target.style.boxShadow = "none";
+                      field.handleBlur();
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    style={{
+                      position: "absolute",
+                      right: "0.75rem",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      padding: 0,
+                    }}
+                    aria-label={showConfirmPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {field.state.meta.errors.map((error) => (
+                  <p
+                    key={error?.message}
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--crimson)",
+                      margin: 0,
+                    }}
+                  >
+                    {error?.message}
+                  </p>
+                ))}
+              </div>
+            )}
+          </form.Field>
 
-      <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignIn}
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Already have an account? Sign In
-        </Button>
+          {/* 送信ボタン */}
+          <form.Subscribe
+            selector={(state) => ({ canSubmit: state.canSubmit, isSubmitting: state.isSubmitting })}
+          >
+            {({ canSubmit, isSubmitting }) => (
+              <button
+                type="submit"
+                disabled={!canSubmit || isSubmitting}
+                style={{
+                  marginTop: "0.25rem",
+                  width: "100%",
+                  padding: "0.75rem",
+                  background: canSubmit && !isSubmitting
+                    ? "var(--poison-green)"
+                    : "rgba(57,224,106,0.3)",
+                  color: canSubmit && !isSubmitting ? "#080b10" : "rgba(8,11,16,0.5)",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "0.9375rem",
+                  fontWeight: 700,
+                  fontFamily: "'Space Mono', monospace",
+                  letterSpacing: "0.06em",
+                  cursor: canSubmit && !isSubmitting ? "pointer" : "not-allowed",
+                  transition: "background 0.2s, box-shadow 0.2s",
+                  boxShadow: canSubmit && !isSubmitting
+                    ? "0 0 16px rgba(57,224,106,0.25)"
+                    : "none",
+                }}
+              >
+                {isSubmitting ? "処理中..." : "アカウントを作成"}
+              </button>
+            )}
+          </form.Subscribe>
+        </form>
+
+        {/* 区切り線 */}
+        <div
+          style={{
+            margin: "1.5rem 0 1rem",
+            borderTop: "1px solid var(--border)",
+          }}
+        />
+
+        {/* サインインへ切り替え */}
+        <p style={{ textAlign: "center", margin: 0 }}>
+          <span style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
+            すでにアカウントをお持ちの方は{" "}
+          </span>
+          <button
+            type="button"
+            onClick={onSwitchToSignIn}
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--poison-green)",
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              padding: 0,
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+            }}
+          >
+            ログイン
+          </button>
+        </p>
       </div>
     </div>
   );

@@ -13,3 +13,5 @@ export function createDb() {
 }
 
 export const db = createDb();
+
+export * from "./schema";
