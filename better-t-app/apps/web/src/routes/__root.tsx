@@ -176,26 +176,85 @@ function Navbar() {
           </Link>
 
           {/* 認証ボタン（デスクトップ） */}
-          <div className="nav-desktop-search">
+          <div className="nav-desktop-search" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             {session ? (
-              <button
-                type="button"
-                onClick={async () => {
-                  await authClient.signOut();
-                  router.navigate({ to: "/" });
-                }}
-                style={{
-                  background: "transparent",
-                  border: "1px solid var(--border-strong)",
-                  borderRadius: "8px",
-                  padding: "0.375rem 1rem",
-                  color: "var(--text-secondary)",
-                  fontSize: "0.875rem",
-                  cursor: "pointer",
-                }}
-              >
-                ログアウト
-              </button>
+              <>
+                <Link
+                  to="/dashboard"
+                  style={{ textDecoration: "none" }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.375rem 0.75rem",
+                      background: "var(--bg-surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "border-color 0.2s, background 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "var(--border-strong)";
+                      (e.currentTarget as HTMLElement).style.background = "var(--bg-card-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                      (e.currentTarget as HTMLElement).style.background = "var(--bg-surface)";
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "50%",
+                        background: "var(--poison-glow)",
+                        border: "1px solid var(--poison-green)",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "0.625rem",
+                        fontFamily: "'Space Mono',monospace",
+                        color: "var(--poison-green)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {session.user?.name?.[0]?.toUpperCase() ?? "?"}
+                    </span>
+                    <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
+                      マイページ
+                    </span>
+                  </div>
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await authClient.signOut();
+                    router.navigate({ to: "/" });
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    padding: "0.375rem 0.75rem",
+                    color: "var(--text-muted)",
+                    fontSize: "0.8125rem",
+                    cursor: "pointer",
+                    transition: "border-color 0.2s, color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(224,58,58,0.5)";
+                    (e.currentTarget as HTMLButtonElement).style.color = "#e03a3a";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)";
+                  }}
+                >
+                  ログアウト
+                </button>
+              </>
             ) : (
               <Link to="/login" style={{ textDecoration: "none" }}>
                 <span
@@ -272,27 +331,67 @@ function Navbar() {
         </Link>
         <div style={{ paddingTop: "1rem" }}>
           {session ? (
-            <button
-              type="button"
-              onClick={async () => {
-                await authClient.signOut();
-                setMobileMenuOpen(false);
-                router.navigate({ to: "/" });
-              }}
-              style={{
-                width: "100%",
-                background: "transparent",
-                border: "1px solid var(--border-strong)",
-                borderRadius: "8px",
-                padding: "0.625rem 1rem",
-                color: "var(--text-secondary)",
-                fontSize: "0.9375rem",
-                cursor: "pointer",
-                textAlign: "left",
-              }}
-            >
-              ログアウト
-            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ textDecoration: "none" }}
+              >
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.75rem 1rem",
+                    background: "var(--bg-card)",
+                    border: "1px solid var(--border-strong)",
+                    borderRadius: "8px",
+                    fontSize: "0.9375rem",
+                    color: "var(--poison-green)",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "50%",
+                      background: "var(--poison-glow)",
+                      border: "1px solid var(--poison-green)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.75rem",
+                      fontFamily: "'Space Mono',monospace",
+                      color: "var(--poison-green)",
+                    }}
+                  >
+                    {session.user?.name?.[0]?.toUpperCase() ?? "?"}
+                  </span>
+                  {session.user?.name ?? "マイページ"}
+                </span>
+              </Link>
+              <button
+                type="button"
+                onClick={async () => {
+                  await authClient.signOut();
+                  setMobileMenuOpen(false);
+                  router.navigate({ to: "/" });
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "1px solid var(--border)",
+                  borderRadius: "8px",
+                  padding: "0.625rem 1rem",
+                  color: "var(--text-muted)",
+                  fontSize: "0.9375rem",
+                  cursor: "pointer",
+                  textAlign: "left",
+                }}
+              >
+                ログアウト
+              </button>
+            </div>
           ) : (
             <Link to="/login" style={{ textDecoration: "none" }} onClick={() => setMobileMenuOpen(false)}>
               <span
