@@ -95,11 +95,20 @@ function ToxinDetailPage() {
 
   const badge = DANGER_BADGE[toxin.dangerLevel] ?? DANGER_BADGE[1];
 
-  // 毒性機構をステップ表示用に分割（APIがJSON.parseした結果を返す）
-  const mechanismSteps: string[] = Array.isArray(toxin.mechanism)
-    ? toxin.mechanism
+  type MechanismStep = { step: number; title: string; description: string };
+
+  // 毒性機構をステップ表示用に変換（APIがJSON.parseした結果を返す）
+  const mechanismSteps: MechanismStep[] = Array.isArray(toxin.mechanism)
+    ? (toxin.mechanism as unknown[]).map((item, idx) =>
+        item !== null && typeof item === "object" && "description" in item
+          ? (item as MechanismStep)
+          : { step: idx + 1, title: "", description: String(item) }
+      )
     : typeof toxin.mechanism === "string"
-    ? (toxin.mechanism as string).split(/[。\n]/).filter((s: string) => s.trim().length > 0)
+    ? (toxin.mechanism as string)
+        .split(/[。\n]/)
+        .filter((s) => s.trim().length > 0)
+        .map((s, idx) => ({ step: idx + 1, title: "", description: s.trim() }))
     : [];
 
   return (
@@ -308,7 +317,7 @@ function ToxinDetailPage() {
                 毒性メカニズム
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {mechanismSteps.map((step: string, idx: number) => (
+                {mechanismSteps.map((item, idx) => (
                   <div
                     key={`step-${idx}`}
                     style={{
@@ -336,9 +345,16 @@ function ToxinDetailPage() {
                     >
                       {String(idx + 1).padStart(2, "0")}
                     </div>
-                    <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.7, paddingTop: "0.25rem" }}>
-                      {step.trim()}
-                    </p>
+                    <div style={{ paddingTop: "0.25rem" }}>
+                      {item.title && (
+                        <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem", fontFamily: "'Noto Serif JP', serif" }}>
+                          {item.title}
+                        </p>
+                      )}
+                      <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.7 }}>
+                        {item.description}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
